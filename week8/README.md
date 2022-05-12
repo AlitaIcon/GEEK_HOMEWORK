@@ -125,7 +125,7 @@ select a.id from (select id, age from t_user where age > 18) a where true and ag
     +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#58, sex#59, age#60, occupation#61, zipcode#62], Partition Cols: []]      +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#58, sex#59, age#60, occupation#61, zipcode#62], Partition Cols: []]
 ```
 
-完整的运行日志请见[logs/1.log](https://github.com/AlitaIcon/GEEK_HOMEWORK/bigdata-homework/week8/logs/1.log)。
+完整的运行日志请见[logs/1.log](https://github.com/AlitaIcon/GEEK_HOMEWORK/tree/main/week8/logs/1.log)。
 
 ### 构建第二条SQL
 
@@ -215,7 +215,7 @@ select a.age from (select age, 1.0 x from t_user where age>20 order by x) a wher
                    +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#16, sex#17, age#18, occupation#19, zipcode#20], Partition Cols: []]                     +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#16, sex#17, age#18, occupation#19, zipcode#20], Partition Cols: []]
 ```
 
-完整的运行日志请见[logs/2.log](https://github.com/AlitaIcon/GEEK_HOMEWORK/bigdata-homework/week8/logs/2.log)。
+完整的运行日志请见[logs/2.log](https://github.com/AlitaIcon/GEEK_HOMEWORK/tree/main/week8/logs/2.log)。
 
 > 参考链接：
 > * spark-catalyst-optimizer: https://github.com/ColZer/DigAndBuried/blob/master/spark/spark-catalyst-optimizer.md
@@ -285,4 +285,4 @@ case class MultiplyOptimizationRule(spark: SparkSession) extends Rule[LogicalPla
     !Project [CheckOverflow((promote_precision(cast(cast(id#17 as decimal(10,0)) as decimal(11,1))) * 1.0), DecimalType(13,1), true) AS (id * 1.0)#22]                                  Project [CheckOverflow(promote_precision(cast(cast(id#17 as decimal(10,0)) as decimal(11,1))), DecimalType(13,1), true) AS (id * 1.0)#22]
     +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#17, sex#18, age#19, occupation#20, zipcode#21], Partition Cols: []]   +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#17, sex#18, age#19, occupation#20, zipcode#21], Partition Cols: []]
     ```
-   完整的运行日志请见[logs/3.log](https://github.com/AlitaIcon/GEEK_HOMEWORK/bigdata-homework/week8/logs/3.log)。
+   完整的运行日志请见[logs/3.log](https://github.com/AlitaIcon/GEEK_HOMEWORK/tree/main/week8/logs/3.log)。
