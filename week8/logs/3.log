@@ -1,0 +1,133 @@
+spark-sql> select id * 1 from t_user;
+22/05/12 16:57:35 WARN PlanChangeLogger: Batch Substitution has no effect.
+22/05/12 16:57:35 WARN PlanChangeLogger: Batch Disable Hints has no effect.
+22/05/12 16:57:35 WARN PlanChangeLogger: Batch Hints has no effect.
+22/05/12 16:57:35 WARN PlanChangeLogger: Batch Simple Sanity Check has no effect.
+22/05/12 16:57:36 WARN PlanChangeLogger:
+=== Applying Rule org.apache.spark.sql.catalyst.analysis.Analyzer$ResolveRelations ===
+ 'Project [unresolvedalias(('id * 1), None)]   'Project [unresolvedalias(('id * 1), None)]
+!+- 'UnresolvedRelation [t_user], [], false    +- 'SubqueryAlias spark_catalog.testsql.t_user
+!                                                 +- 'UnresolvedCatalogRelation `testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, [], false
+
+22/05/12 16:57:36 WARN PlanChangeLogger:
+=== Applying Rule org.apache.spark.sql.execution.datasources.FindDataSourceTable ===
+ 'Project [unresolvedalias(('id * 1), None)]                                                                          'Project [unresolvedalias(('id * 1), None)]
+!+- 'SubqueryAlias spark_catalog.testsql.t_user                                                                       +- SubqueryAlias spark_catalog.testsql.t_user
+!   +- 'UnresolvedCatalogRelation `testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, [], false      +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#41, sex#42, age#43, occupation#44, zipcode#45], Partition Cols: []]
+
+22/05/12 16:57:36 WARN PlanChangeLogger:
+=== Applying Rule org.apache.spark.sql.catalyst.analysis.Analyzer$ResolveReferences ===
+!'Project [unresolvedalias(('id * 1), None)]                                                                                                                                           'Project [unresolvedalias((id#41 * 1), None)]
+ +- SubqueryAlias spark_catalog.testsql.t_user                                                                                                                                         +- SubqueryAlias spark_catalog.testsql.t_user
+    +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#41, sex#42, age#43, occupation#44, zipcode#45], Partition Cols: []]      +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#41, sex#42, age#43, occupation#44, zipcode#45], Partition Cols: []]
+
+22/05/12 16:57:36 WARN PlanChangeLogger:
+=== Applying Rule org.apache.spark.sql.catalyst.analysis.Analyzer$ResolveAliases ===
+!'Project [unresolvedalias((id#41 * 1), None)]                                                                                                                                         Project [(id#41 * 1) AS (id * 1)#46]
+ +- SubqueryAlias spark_catalog.testsql.t_user                                                                                                                                         +- SubqueryAlias spark_catalog.testsql.t_user
+    +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#41, sex#42, age#43, occupation#44, zipcode#45], Partition Cols: []]      +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#41, sex#42, age#43, occupation#44, zipcode#45], Partition Cols: []]
+
+22/05/12 16:57:36 WARN PlanChangeLogger:
+=== Result of Batch Resolution ===
+!'Project [unresolvedalias(('id * 1), None)]   Project [(id#41 * 1) AS (id * 1)#46]
+!+- 'UnresolvedRelation [t_user], [], false    +- SubqueryAlias spark_catalog.testsql.t_user
+!                                                 +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#41, sex#42, age#43, occupation#44, zipcode#45], Partition Cols: []]
+
+22/05/12 16:57:36 WARN PlanChangeLogger: Batch Remove TempResolvedColumn has no effect.
+22/05/12 16:57:36 WARN PlanChangeLogger: Batch Apply Char Padding has no effect.
+22/05/12 16:57:36 WARN PlanChangeLogger:
+=== Applying Rule org.apache.spark.sql.hive.DetermineTableStats ===
+ Project [(id#41 * 1) AS (id * 1)#46]                                                                                                                                                  Project [(id#41 * 1) AS (id * 1)#46]
+ +- SubqueryAlias spark_catalog.testsql.t_user                                                                                                                                         +- SubqueryAlias spark_catalog.testsql.t_user
+    +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#41, sex#42, age#43, occupation#44, zipcode#45], Partition Cols: []]      +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#41, sex#42, age#43, occupation#44, zipcode#45], Partition Cols: []]
+
+22/05/12 16:57:36 WARN PlanChangeLogger:
+=== Result of Batch Post-Hoc Resolution ===
+ Project [(id#41 * 1) AS (id * 1)#46]                                                                                                                                                  Project [(id#41 * 1) AS (id * 1)#46]
+ +- SubqueryAlias spark_catalog.testsql.t_user                                                                                                                                         +- SubqueryAlias spark_catalog.testsql.t_user
+    +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#41, sex#42, age#43, occupation#44, zipcode#45], Partition Cols: []]      +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#41, sex#42, age#43, occupation#44, zipcode#45], Partition Cols: []]
+
+22/05/12 16:57:36 WARN PlanChangeLogger: Batch Remove Unresolved Hints has no effect.
+22/05/12 16:57:36 WARN PlanChangeLogger: Batch Nondeterministic has no effect.
+22/05/12 16:57:36 WARN PlanChangeLogger: Batch UDF has no effect.
+22/05/12 16:57:36 WARN PlanChangeLogger: Batch UpdateNullability has no effect.
+22/05/12 16:57:36 WARN PlanChangeLogger: Batch Subquery has no effect.
+22/05/12 16:57:36 WARN PlanChangeLogger: Batch Cleanup has no effect.
+22/05/12 16:57:36 WARN PlanChangeLogger: Batch HandleAnalysisOnlyCommand has no effect.
+22/05/12 16:57:36 WARN PlanChangeLogger:
+=== Metrics of Executed Rules ===
+Total number of runs: 186
+Total time: 0.515196867 seconds
+Total number of effective runs: 5
+Total time of effective runs: 0.432767127 seconds
+
+22/05/12 16:57:36 WARN PlanChangeLogger: Batch Eliminate Distinct has no effect.
+22/05/12 16:57:36 WARN PlanChangeLogger:
+=== Applying Rule org.apache.spark.sql.catalyst.analysis.EliminateSubqueryAliases ===
+ Project [(id#41 * 1) AS (id * 1)#46]                                                                                                                                                  Project [(id#41 * 1) AS (id * 1)#46]
+!+- SubqueryAlias spark_catalog.testsql.t_user                                                                                                                                         +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#41, sex#42, age#43, occupation#44, zipcode#45], Partition Cols: []]
+!   +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#41, sex#42, age#43, occupation#44, zipcode#45], Partition Cols: []]
+
+22/05/12 16:57:36 WARN PlanChangeLogger:
+=== Result of Batch Finish Analysis ===
+ Project [(id#41 * 1) AS (id * 1)#46]                                                                                                                                                  Project [(id#41 * 1) AS (id * 1)#46]
+!+- SubqueryAlias spark_catalog.testsql.t_user                                                                                                                                         +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#41, sex#42, age#43, occupation#44, zipcode#45], Partition Cols: []]
+!   +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#41, sex#42, age#43, occupation#44, zipcode#45], Partition Cols: []]
+
+22/05/12 16:57:36 WARN PlanChangeLogger: Batch Union has no effect.
+22/05/12 16:57:36 WARN PlanChangeLogger: Batch OptimizeLimitZero has no effect.
+22/05/12 16:57:36 WARN PlanChangeLogger: Batch LocalRelation early has no effect.
+22/05/12 16:57:36 WARN PlanChangeLogger: Batch Pullup Correlated Expressions has no effect.
+22/05/12 16:57:36 WARN PlanChangeLogger: Batch Subquery has no effect.
+22/05/12 16:57:36 WARN PlanChangeLogger: Batch Replace Operators has no effect.
+22/05/12 16:57:36 WARN PlanChangeLogger: Batch Aggregate has no effect.
+22/05/12 16:57:36 WARN MultiplyOptimizationRule: Right is one, MultiplyOptimizationRule take effect
+22/05/12 16:57:36 WARN PlanChangeLogger:
+=== Applying Rule org.example.MultiplyOptimizationRule ===
+!Project [(id#41 * 1) AS (id * 1)#46]                                                                                                                                               Project [id#41 AS (id * 1)#46]
+ +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#41, sex#42, age#43, occupation#44, zipcode#45], Partition Cols: []]   +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#41, sex#42, age#43, occupation#44, zipcode#45], Partition Cols: []]
+
+22/05/12 16:57:36 WARN PlanChangeLogger:
+=== Result of Batch Operator Optimization before Inferring Filters ===
+!Project [(id#41 * 1) AS (id * 1)#46]                                                                                                                                               Project [id#41 AS (id * 1)#46]
+ +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#41, sex#42, age#43, occupation#44, zipcode#45], Partition Cols: []]   +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#41, sex#42, age#43, occupation#44, zipcode#45], Partition Cols: []]
+
+22/05/12 16:57:36 WARN PlanChangeLogger: Batch Infer Filters has no effect.
+22/05/12 16:57:36 WARN PlanChangeLogger: Batch Operator Optimization after Inferring Filters has no effect.
+22/05/12 16:57:36 WARN PlanChangeLogger: Batch Push extra predicate through join has no effect.
+22/05/12 16:57:36 WARN PlanChangeLogger: Batch Early Filter and Projection Push-Down has no effect.
+22/05/12 16:57:36 WARN PlanChangeLogger: Batch Update CTE Relation Stats has no effect.
+22/05/12 16:57:36 WARN PlanChangeLogger: Batch Join Reorder has no effect.
+22/05/12 16:57:36 WARN PlanChangeLogger: Batch Eliminate Sorts has no effect.
+22/05/12 16:57:36 WARN PlanChangeLogger: Batch Decimal Optimizations has no effect.
+22/05/12 16:57:36 WARN PlanChangeLogger: Batch Distinct Aggregate Rewrite has no effect.
+22/05/12 16:57:36 WARN PlanChangeLogger: Batch Object Expressions Optimization has no effect.
+22/05/12 16:57:36 WARN PlanChangeLogger: Batch LocalRelation has no effect.
+22/05/12 16:57:36 WARN PlanChangeLogger: Batch Check Cartesian Products has no effect.
+22/05/12 16:57:36 WARN PlanChangeLogger: Batch RewriteSubquery has no effect.
+22/05/12 16:57:36 WARN PlanChangeLogger: Batch NormalizeFloatingNumbers has no effect.
+22/05/12 16:57:36 WARN PlanChangeLogger: Batch ReplaceUpdateFieldsExpression has no effect.
+22/05/12 16:57:36 WARN PlanChangeLogger: Batch Optimize Metadata Only Query has no effect.
+22/05/12 16:57:36 WARN PlanChangeLogger: Batch PartitionPruning has no effect.
+22/05/12 16:57:36 WARN PlanChangeLogger: Batch Pushdown Filters from PartitionPruning has no effect.
+22/05/12 16:57:36 WARN PlanChangeLogger: Batch Cleanup filters that cannot be pushed down has no effect.
+22/05/12 16:57:36 WARN PlanChangeLogger: Batch Extract Python UDFs has no effect.
+22/05/12 16:57:36 WARN PlanChangeLogger: Batch User Provided Optimizers has no effect.
+22/05/12 16:57:36 WARN PlanChangeLogger:
+=== Metrics of Executed Rules ===
+Total number of runs: 215
+Total time: 0.032390604 seconds
+Total number of effective runs: 2
+Total time of effective runs: 0.003401163 seconds
+
+22/05/12 16:57:36 WARN PlanChangeLogger:
+=== Applying Rule org.apache.spark.sql.execution.CollapseCodegenStages ===
+!Project [id#41 AS (id * 1)#46]                                                                                                                                                                                       *(1) Project [id#41 AS (id * 1)#46]
+ +- Scan hive testsql.t_user [id#41], HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#41, sex#42, age#43, occupation#44, zipcode#45], Partition Cols: []]   +- Scan hive testsql.t_user [id#41], HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#41, sex#42, age#43, occupation#44, zipcode#45], Partition Cols: []]
+
+22/05/12 16:57:36 WARN PlanChangeLogger:
+=== Result of Batch Preparations ===
+!Project [id#41 AS (id * 1)#46]                                                                                                                                                                                       *(1) Project [id#41 AS (id * 1)#46]
+ +- Scan hive testsql.t_user [id#41], HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#41, sex#42, age#43, occupation#44, zipcode#45], Partition Cols: []]   +- Scan hive testsql.t_user [id#41], HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#41, sex#42, age#43, occupation#44, zipcode#45], Partition Cols: []]
+
+Time taken: 1.091 seconds

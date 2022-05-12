@@ -1,0 +1,682 @@
+spark-sql> select a.age from (select age, 1.0 x from t_user where age>20 order by x) a where 1=1 except select age from t_user where age=30;
+22/05/12 16:46:43 WARN PlanChangeLogger: Batch Substitution has no effect.
+22/05/12 16:46:43 WARN PlanChangeLogger: Batch Disable Hints has no effect.
+22/05/12 16:46:43 WARN PlanChangeLogger: Batch Hints has no effect.
+22/05/12 16:46:43 WARN PlanChangeLogger: Batch Simple Sanity Check has no effect.
+22/05/12 16:46:43 WARN PlanChangeLogger:
+=== Applying Rule org.apache.spark.sql.catalyst.analysis.Analyzer$ResolveRelations ===
+ 'Except false                                                  'Except false
+ :- 'Project ['a.age]                                           :- 'Project ['a.age]
+ :  +- 'Filter (1 = 1)                                          :  +- 'Filter (1 = 1)
+ :     +- 'SubqueryAlias a                                      :     +- 'SubqueryAlias a
+ :        +- 'Sort ['x ASC NULLS FIRST], true                   :        +- 'Sort ['x ASC NULLS FIRST], true
+ :           +- 'Project ['age, 1.0 AS x#29]                    :           +- 'Project ['age, 1.0 AS x#29]
+ :              +- 'Filter ('age > 20)                          :              +- 'Filter ('age > 20)
+!:                 +- 'UnresolvedRelation [t_user], [], false   :                 +- 'SubqueryAlias spark_catalog.testsql.t_user
+!+- 'Project ['age]                                             :                    +- 'UnresolvedCatalogRelation `testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, [], false
+!   +- 'Filter ('age = 30)                                      +- 'Project ['age]
+!      +- 'UnresolvedRelation [t_user], [], false                  +- 'Filter ('age = 30)
+!                                                                     +- 'SubqueryAlias spark_catalog.testsql.t_user
+!                                                                        +- 'UnresolvedCatalogRelation `testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, [], false
+
+22/05/12 16:46:43 WARN PlanChangeLogger:
+=== Applying Rule org.apache.spark.sql.execution.datasources.FindDataSourceTable ===
+ 'Except false                                                                                                                          'Except false
+ :- 'Project ['a.age]                                                                                                                   :- 'Project ['a.age]
+ :  +- 'Filter (1 = 1)                                                                                                                  :  +- 'Filter (1 = 1)
+ :     +- 'SubqueryAlias a                                                                                                              :     +- 'SubqueryAlias a
+ :        +- 'Sort ['x ASC NULLS FIRST], true                                                                                           :        +- 'Sort ['x ASC NULLS FIRST], true
+ :           +- 'Project ['age, 1.0 AS x#29]                                                                                            :           +- 'Project ['age, 1.0 AS x#29]
+ :              +- 'Filter ('age > 20)                                                                                                  :              +- 'Filter ('age > 20)
+!:                 +- 'SubqueryAlias spark_catalog.testsql.t_user                                                                       :                 +- SubqueryAlias spark_catalog.testsql.t_user
+!:                    +- 'UnresolvedCatalogRelation `testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, [], false   :                    +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#30, sex#31, age#32, occupation#33, zipcode#34], Partition Cols: []]
+ +- 'Project ['age]                                                                                                                     +- 'Project ['age]
+    +- 'Filter ('age = 30)                                                                                                                 +- 'Filter ('age = 30)
+!      +- 'SubqueryAlias spark_catalog.testsql.t_user                                                                                         +- SubqueryAlias spark_catalog.testsql.t_user
+!         +- 'UnresolvedCatalogRelation `testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, [], false                        +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#35, sex#36, age#37, occupation#38, zipcode#39], Partition Cols: []]
+
+22/05/12 16:46:43 WARN PlanChangeLogger:
+=== Applying Rule org.apache.spark.sql.catalyst.analysis.Analyzer$ResolveReferences ===
+!'Except false                                                                                                                                                                                           Except false
+!:- 'Project ['a.age]                                                                                                                                                                                    :- Project [age#32]
+!:  +- 'Filter (1 = 1)                                                                                                                                                                                   :  +- Filter (1 = 1)
+!:     +- 'SubqueryAlias a                                                                                                                                                                               :     +- SubqueryAlias a
+!:        +- 'Sort ['x ASC NULLS FIRST], true                                                                                                                                                            :        +- Sort [x#29 ASC NULLS FIRST], true
+!:           +- 'Project ['age, 1.0 AS x#29]                                                                                                                                                             :           +- Project [age#32, 1.0 AS x#29]
+!:              +- 'Filter ('age > 20)                                                                                                                                                                   :              +- Filter (age#32 > 20)
+ :                 +- SubqueryAlias spark_catalog.testsql.t_user                                                                                                                                         :                 +- SubqueryAlias spark_catalog.testsql.t_user
+ :                    +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#30, sex#31, age#32, occupation#33, zipcode#34], Partition Cols: []]   :                    +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#30, sex#31, age#32, occupation#33, zipcode#34], Partition Cols: []]
+!+- 'Project ['age]                                                                                                                                                                                      +- Project [age#37]
+!   +- 'Filter ('age = 30)                                                                                                                                                                                  +- Filter (age#37 = 30)
+       +- SubqueryAlias spark_catalog.testsql.t_user                                                                                                                                                           +- SubqueryAlias spark_catalog.testsql.t_user
+          +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#35, sex#36, age#37, occupation#38, zipcode#39], Partition Cols: []]                        +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#35, sex#36, age#37, occupation#38, zipcode#39], Partition Cols: []]
+
+22/05/12 16:46:43 WARN PlanChangeLogger:
+=== Result of Batch Resolution ===
+!'Except false                                                  Except false
+!:- 'Project ['a.age]                                           :- Project [age#32]
+!:  +- 'Filter (1 = 1)                                          :  +- Filter (1 = 1)
+!:     +- 'SubqueryAlias a                                      :     +- SubqueryAlias a
+!:        +- 'Sort ['x ASC NULLS FIRST], true                   :        +- Sort [x#29 ASC NULLS FIRST], true
+!:           +- 'Project ['age, 1.0 AS x#29]                    :           +- Project [age#32, 1.0 AS x#29]
+!:              +- 'Filter ('age > 20)                          :              +- Filter (age#32 > 20)
+!:                 +- 'UnresolvedRelation [t_user], [], false   :                 +- SubqueryAlias spark_catalog.testsql.t_user
+!+- 'Project ['age]                                             :                    +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#30, sex#31, age#32, occupation#33, zipcode#34], Partition Cols: []]
+!   +- 'Filter ('age = 30)                                      +- Project [age#37]
+!      +- 'UnresolvedRelation [t_user], [], false                  +- Filter (age#37 = 30)
+!                                                                     +- SubqueryAlias spark_catalog.testsql.t_user
+!                                                                        +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#35, sex#36, age#37, occupation#38, zipcode#39], Partition Cols: []]
+
+22/05/12 16:46:43 WARN PlanChangeLogger: Batch Remove TempResolvedColumn has no effect.
+22/05/12 16:46:43 WARN PlanChangeLogger: Batch Apply Char Padding has no effect.
+22/05/12 16:46:43 WARN PlanChangeLogger:
+=== Applying Rule org.apache.spark.sql.hive.DetermineTableStats ===
+ Except false                                                                                                                                                                                            Except false
+ :- Project [age#32]                                                                                                                                                                                     :- Project [age#32]
+ :  +- Filter (1 = 1)                                                                                                                                                                                    :  +- Filter (1 = 1)
+ :     +- SubqueryAlias a                                                                                                                                                                                :     +- SubqueryAlias a
+ :        +- Sort [x#29 ASC NULLS FIRST], true                                                                                                                                                           :        +- Sort [x#29 ASC NULLS FIRST], true
+ :           +- Project [age#32, 1.0 AS x#29]                                                                                                                                                            :           +- Project [age#32, 1.0 AS x#29]
+ :              +- Filter (age#32 > 20)                                                                                                                                                                  :              +- Filter (age#32 > 20)
+ :                 +- SubqueryAlias spark_catalog.testsql.t_user                                                                                                                                         :                 +- SubqueryAlias spark_catalog.testsql.t_user
+ :                    +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#30, sex#31, age#32, occupation#33, zipcode#34], Partition Cols: []]   :                    +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#30, sex#31, age#32, occupation#33, zipcode#34], Partition Cols: []]
+ +- Project [age#37]                                                                                                                                                                                     +- Project [age#37]
+    +- Filter (age#37 = 30)                                                                                                                                                                                 +- Filter (age#37 = 30)
+       +- SubqueryAlias spark_catalog.testsql.t_user                                                                                                                                                           +- SubqueryAlias spark_catalog.testsql.t_user
+          +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#35, sex#36, age#37, occupation#38, zipcode#39], Partition Cols: []]                        +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#35, sex#36, age#37, occupation#38, zipcode#39], Partition Cols: []]
+
+22/05/12 16:46:44 WARN PlanChangeLogger:
+=== Result of Batch Post-Hoc Resolution ===
+ Except false                                                                                                                                                                                            Except false
+ :- Project [age#32]                                                                                                                                                                                     :- Project [age#32]
+ :  +- Filter (1 = 1)                                                                                                                                                                                    :  +- Filter (1 = 1)
+ :     +- SubqueryAlias a                                                                                                                                                                                :     +- SubqueryAlias a
+ :        +- Sort [x#29 ASC NULLS FIRST], true                                                                                                                                                           :        +- Sort [x#29 ASC NULLS FIRST], true
+ :           +- Project [age#32, 1.0 AS x#29]                                                                                                                                                            :           +- Project [age#32, 1.0 AS x#29]
+ :              +- Filter (age#32 > 20)                                                                                                                                                                  :              +- Filter (age#32 > 20)
+ :                 +- SubqueryAlias spark_catalog.testsql.t_user                                                                                                                                         :                 +- SubqueryAlias spark_catalog.testsql.t_user
+ :                    +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#30, sex#31, age#32, occupation#33, zipcode#34], Partition Cols: []]   :                    +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#30, sex#31, age#32, occupation#33, zipcode#34], Partition Cols: []]
+ +- Project [age#37]                                                                                                                                                                                     +- Project [age#37]
+    +- Filter (age#37 = 30)                                                                                                                                                                                 +- Filter (age#37 = 30)
+       +- SubqueryAlias spark_catalog.testsql.t_user                                                                                                                                                           +- SubqueryAlias spark_catalog.testsql.t_user
+          +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#35, sex#36, age#37, occupation#38, zipcode#39], Partition Cols: []]                        +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#35, sex#36, age#37, occupation#38, zipcode#39], Partition Cols: []]
+
+22/05/12 16:46:44 WARN PlanChangeLogger: Batch Remove Unresolved Hints has no effect.
+22/05/12 16:46:44 WARN PlanChangeLogger: Batch Nondeterministic has no effect.
+22/05/12 16:46:44 WARN PlanChangeLogger: Batch UDF has no effect.
+22/05/12 16:46:44 WARN PlanChangeLogger: Batch UpdateNullability has no effect.
+22/05/12 16:46:44 WARN PlanChangeLogger: Batch Subquery has no effect.
+22/05/12 16:46:44 WARN PlanChangeLogger:
+=== Applying Rule org.apache.spark.sql.catalyst.analysis.CleanupAliases ===
+ Except false                                                                                                                                                                                            Except false
+ :- Project [age#32]                                                                                                                                                                                     :- Project [age#32]
+ :  +- Filter (1 = 1)                                                                                                                                                                                    :  +- Filter (1 = 1)
+ :     +- SubqueryAlias a                                                                                                                                                                                :     +- SubqueryAlias a
+ :        +- Sort [x#29 ASC NULLS FIRST], true                                                                                                                                                           :        +- Sort [x#29 ASC NULLS FIRST], true
+ :           +- Project [age#32, 1.0 AS x#29]                                                                                                                                                            :           +- Project [age#32, 1.0 AS x#29]
+ :              +- Filter (age#32 > 20)                                                                                                                                                                  :              +- Filter (age#32 > 20)
+ :                 +- SubqueryAlias spark_catalog.testsql.t_user                                                                                                                                         :                 +- SubqueryAlias spark_catalog.testsql.t_user
+ :                    +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#30, sex#31, age#32, occupation#33, zipcode#34], Partition Cols: []]   :                    +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#30, sex#31, age#32, occupation#33, zipcode#34], Partition Cols: []]
+ +- Project [age#37]                                                                                                                                                                                     +- Project [age#37]
+    +- Filter (age#37 = 30)                                                                                                                                                                                 +- Filter (age#37 = 30)
+       +- SubqueryAlias spark_catalog.testsql.t_user                                                                                                                                                           +- SubqueryAlias spark_catalog.testsql.t_user
+          +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#35, sex#36, age#37, occupation#38, zipcode#39], Partition Cols: []]                        +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#35, sex#36, age#37, occupation#38, zipcode#39], Partition Cols: []]
+
+22/05/12 16:46:44 WARN PlanChangeLogger:
+=== Result of Batch Cleanup ===
+ Except false                                                                                                                                                                                            Except false
+ :- Project [age#32]                                                                                                                                                                                     :- Project [age#32]
+ :  +- Filter (1 = 1)                                                                                                                                                                                    :  +- Filter (1 = 1)
+ :     +- SubqueryAlias a                                                                                                                                                                                :     +- SubqueryAlias a
+ :        +- Sort [x#29 ASC NULLS FIRST], true                                                                                                                                                           :        +- Sort [x#29 ASC NULLS FIRST], true
+ :           +- Project [age#32, 1.0 AS x#29]                                                                                                                                                            :           +- Project [age#32, 1.0 AS x#29]
+ :              +- Filter (age#32 > 20)                                                                                                                                                                  :              +- Filter (age#32 > 20)
+ :                 +- SubqueryAlias spark_catalog.testsql.t_user                                                                                                                                         :                 +- SubqueryAlias spark_catalog.testsql.t_user
+ :                    +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#30, sex#31, age#32, occupation#33, zipcode#34], Partition Cols: []]   :                    +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#30, sex#31, age#32, occupation#33, zipcode#34], Partition Cols: []]
+ +- Project [age#37]                                                                                                                                                                                     +- Project [age#37]
+    +- Filter (age#37 = 30)                                                                                                                                                                                 +- Filter (age#37 = 30)
+       +- SubqueryAlias spark_catalog.testsql.t_user                                                                                                                                                           +- SubqueryAlias spark_catalog.testsql.t_user
+          +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#35, sex#36, age#37, occupation#38, zipcode#39], Partition Cols: []]                        +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#35, sex#36, age#37, occupation#38, zipcode#39], Partition Cols: []]
+
+22/05/12 16:46:44 WARN PlanChangeLogger: Batch HandleAnalysisOnlyCommand has no effect.
+22/05/12 16:46:44 WARN PlanChangeLogger:
+=== Metrics of Executed Rules ===
+Total number of runs: 187
+Total time: 0.298682376 seconds
+Total number of effective runs: 5
+Total time of effective runs: 0.206278256 seconds
+
+22/05/12 16:46:44 WARN PlanChangeLogger: Batch Eliminate Distinct has no effect.
+22/05/12 16:46:44 WARN PlanChangeLogger:
+=== Applying Rule org.apache.spark.sql.catalyst.analysis.EliminateSubqueryAliases ===
+ Except false                                                                                                                                                                                            Except false
+ :- Project [age#32]                                                                                                                                                                                     :- Project [age#32]
+ :  +- Filter (1 = 1)                                                                                                                                                                                    :  +- Filter (1 = 1)
+!:     +- SubqueryAlias a                                                                                                                                                                                :     +- Sort [x#29 ASC NULLS FIRST], true
+!:        +- Sort [x#29 ASC NULLS FIRST], true                                                                                                                                                           :        +- Project [age#32, 1.0 AS x#29]
+!:           +- Project [age#32, 1.0 AS x#29]                                                                                                                                                            :           +- Filter (age#32 > 20)
+!:              +- Filter (age#32 > 20)                                                                                                                                                                  :              +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#30, sex#31, age#32, occupation#33, zipcode#34], Partition Cols: []]
+!:                 +- SubqueryAlias spark_catalog.testsql.t_user                                                                                                                                         +- Project [age#37]
+!:                    +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#30, sex#31, age#32, occupation#33, zipcode#34], Partition Cols: []]      +- Filter (age#37 = 30)
+!+- Project [age#37]                                                                                                                                                                                           +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#35, sex#36, age#37, occupation#38, zipcode#39], Partition Cols: []]
+!   +- Filter (age#37 = 30)
+!      +- SubqueryAlias spark_catalog.testsql.t_user
+!         +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#35, sex#36, age#37, occupation#38, zipcode#39], Partition Cols: []]
+
+22/05/12 16:46:44 WARN PlanChangeLogger:
+=== Result of Batch Finish Analysis ===
+ Except false                                                                                                                                                                                            Except false
+ :- Project [age#32]                                                                                                                                                                                     :- Project [age#32]
+ :  +- Filter (1 = 1)                                                                                                                                                                                    :  +- Filter (1 = 1)
+!:     +- SubqueryAlias a                                                                                                                                                                                :     +- Sort [x#29 ASC NULLS FIRST], true
+!:        +- Sort [x#29 ASC NULLS FIRST], true                                                                                                                                                           :        +- Project [age#32, 1.0 AS x#29]
+!:           +- Project [age#32, 1.0 AS x#29]                                                                                                                                                            :           +- Filter (age#32 > 20)
+!:              +- Filter (age#32 > 20)                                                                                                                                                                  :              +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#30, sex#31, age#32, occupation#33, zipcode#34], Partition Cols: []]
+!:                 +- SubqueryAlias spark_catalog.testsql.t_user                                                                                                                                         +- Project [age#37]
+!:                    +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#30, sex#31, age#32, occupation#33, zipcode#34], Partition Cols: []]      +- Filter (age#37 = 30)
+!+- Project [age#37]                                                                                                                                                                                           +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#35, sex#36, age#37, occupation#38, zipcode#39], Partition Cols: []]
+!   +- Filter (age#37 = 30)
+!      +- SubqueryAlias spark_catalog.testsql.t_user
+!         +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#35, sex#36, age#37, occupation#38, zipcode#39], Partition Cols: []]
+
+22/05/12 16:46:44 WARN PlanChangeLogger: Batch Union has no effect.
+22/05/12 16:46:44 WARN PlanChangeLogger: Batch OptimizeLimitZero has no effect.
+22/05/12 16:46:44 WARN PlanChangeLogger: Batch LocalRelation early has no effect.
+22/05/12 16:46:44 WARN PlanChangeLogger: Batch Pullup Correlated Expressions has no effect.
+22/05/12 16:46:44 WARN PlanChangeLogger: Batch Subquery has no effect.
+22/05/12 16:46:44 WARN PlanChangeLogger:
+=== Applying Rule org.apache.spark.sql.catalyst.optimizer.ReplaceExceptWithAntiJoin ===
+!Except false                                                                                                                                                                                      Distinct
+!:- Project [age#32]                                                                                                                                                                               +- Join LeftAnti, (age#32 <=> age#37)
+!:  +- Filter (1 = 1)                                                                                                                                                                                 :- Project [age#32]
+!:     +- Sort [x#29 ASC NULLS FIRST], true                                                                                                                                                           :  +- Filter (1 = 1)
+!:        +- Project [age#32, 1.0 AS x#29]                                                                                                                                                            :     +- Sort [x#29 ASC NULLS FIRST], true
+!:           +- Filter (age#32 > 20)                                                                                                                                                                  :        +- Project [age#32, 1.0 AS x#29]
+!:              +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#30, sex#31, age#32, occupation#33, zipcode#34], Partition Cols: []]      :           +- Filter (age#32 > 20)
+!+- Project [age#37]                                                                                                                                                                                  :              +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#30, sex#31, age#32, occupation#33, zipcode#34], Partition Cols: []]
+!   +- Filter (age#37 = 30)                                                                                                                                                                           +- Project [age#37]
+!      +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#35, sex#36, age#37, occupation#38, zipcode#39], Partition Cols: []]                  +- Filter (age#37 = 30)
+!                                                                                                                                                                                                           +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#35, sex#36, age#37, occupation#38, zipcode#39], Partition Cols: []]
+
+22/05/12 16:46:44 WARN PlanChangeLogger:
+=== Applying Rule org.apache.spark.sql.catalyst.optimizer.ReplaceDistinctWithAggregate ===
+!Distinct                                                                                                                                                                                             Aggregate [age#32], [age#32]
+ +- Join LeftAnti, (age#32 <=> age#37)                                                                                                                                                                +- Join LeftAnti, (age#32 <=> age#37)
+    :- Project [age#32]                                                                                                                                                                                  :- Project [age#32]
+    :  +- Filter (1 = 1)                                                                                                                                                                                 :  +- Filter (1 = 1)
+    :     +- Sort [x#29 ASC NULLS FIRST], true                                                                                                                                                           :     +- Sort [x#29 ASC NULLS FIRST], true
+    :        +- Project [age#32, 1.0 AS x#29]                                                                                                                                                            :        +- Project [age#32, 1.0 AS x#29]
+    :           +- Filter (age#32 > 20)                                                                                                                                                                  :           +- Filter (age#32 > 20)
+    :              +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#30, sex#31, age#32, occupation#33, zipcode#34], Partition Cols: []]      :              +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#30, sex#31, age#32, occupation#33, zipcode#34], Partition Cols: []]
+    +- Project [age#37]                                                                                                                                                                                  +- Project [age#37]
+       +- Filter (age#37 = 30)                                                                                                                                                                              +- Filter (age#37 = 30)
+          +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#35, sex#36, age#37, occupation#38, zipcode#39], Partition Cols: []]                     +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#35, sex#36, age#37, occupation#38, zipcode#39], Partition Cols: []]
+
+22/05/12 16:46:44 WARN PlanChangeLogger:
+=== Result of Batch Replace Operators ===
+!Except false                                                                                                                                                                                      Aggregate [age#32], [age#32]
+!:- Project [age#32]                                                                                                                                                                               +- Join LeftAnti, (age#32 <=> age#37)
+!:  +- Filter (1 = 1)                                                                                                                                                                                 :- Project [age#32]
+!:     +- Sort [x#29 ASC NULLS FIRST], true                                                                                                                                                           :  +- Filter (1 = 1)
+!:        +- Project [age#32, 1.0 AS x#29]                                                                                                                                                            :     +- Sort [x#29 ASC NULLS FIRST], true
+!:           +- Filter (age#32 > 20)                                                                                                                                                                  :        +- Project [age#32, 1.0 AS x#29]
+!:              +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#30, sex#31, age#32, occupation#33, zipcode#34], Partition Cols: []]      :           +- Filter (age#32 > 20)
+!+- Project [age#37]                                                                                                                                                                                  :              +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#30, sex#31, age#32, occupation#33, zipcode#34], Partition Cols: []]
+!   +- Filter (age#37 = 30)                                                                                                                                                                           +- Project [age#37]
+!      +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#35, sex#36, age#37, occupation#38, zipcode#39], Partition Cols: []]                  +- Filter (age#37 = 30)
+!                                                                                                                                                                                                           +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#35, sex#36, age#37, occupation#38, zipcode#39], Partition Cols: []]
+
+22/05/12 16:46:44 WARN PlanChangeLogger: Batch Aggregate has no effect.
+22/05/12 16:46:44 WARN PlanChangeLogger:
+=== Applying Rule org.apache.spark.sql.catalyst.optimizer.PushDownPredicates ===
+ Aggregate [age#32], [age#32]                                                                                                                                                                         Aggregate [age#32], [age#32]
+ +- Join LeftAnti, (age#32 <=> age#37)                                                                                                                                                                +- Join LeftAnti, (age#32 <=> age#37)
+    :- Project [age#32]                                                                                                                                                                                  :- Project [age#32]
+!   :  +- Filter (1 = 1)                                                                                                                                                                                 :  +- Sort [x#29 ASC NULLS FIRST], true
+!   :     +- Sort [x#29 ASC NULLS FIRST], true                                                                                                                                                           :     +- Project [age#32, 1.0 AS x#29]
+!   :        +- Project [age#32, 1.0 AS x#29]                                                                                                                                                            :        +- Filter ((age#32 > 20) AND (1 = 1))
+!   :           +- Filter (age#32 > 20)                                                                                                                                                                  :           +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#30, sex#31, age#32, occupation#33, zipcode#34], Partition Cols: []]
+!   :              +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#30, sex#31, age#32, occupation#33, zipcode#34], Partition Cols: []]      +- Project [age#37]
+!   +- Project [age#37]                                                                                                                                                                                     +- Filter (age#37 = 30)
+!      +- Filter (age#37 = 30)                                                                                                                                                                                 +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#35, sex#36, age#37, occupation#38, zipcode#39], Partition Cols: []]
+!         +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#35, sex#36, age#37, occupation#38, zipcode#39], Partition Cols: []]
+
+22/05/12 16:46:44 WARN PlanChangeLogger:
+=== Applying Rule org.apache.spark.sql.catalyst.optimizer.PushDownLeftSemiAntiJoin ===
+ Aggregate [age#32], [age#32]                                                                                                                                                                      Aggregate [age#32], [age#32]
+!+- Join LeftAnti, (age#32 <=> age#37)                                                                                                                                                             +- Project [age#32]
+!   :- Project [age#32]                                                                                                                                                                               +- Sort [x#29 ASC NULLS FIRST], true
+!   :  +- Sort [x#29 ASC NULLS FIRST], true                                                                                                                                                              +- Project [age#32, 1.0 AS x#29]
+!   :     +- Project [age#32, 1.0 AS x#29]                                                                                                                                                                  +- Join LeftAnti, (age#32 <=> age#37)
+!   :        +- Filter ((age#32 > 20) AND (1 = 1))                                                                                                                                                             :- Filter ((age#32 > 20) AND (1 = 1))
+!   :           +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#30, sex#31, age#32, occupation#33, zipcode#34], Partition Cols: []]               :  +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#30, sex#31, age#32, occupation#33, zipcode#34], Partition Cols: []]
+!   +- Project [age#37]                                                                                                                                                                                        +- Project [age#37]
+!      +- Filter (age#37 = 30)                                                                                                                                                                                    +- Filter (age#37 = 30)
+!         +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#35, sex#36, age#37, occupation#38, zipcode#39], Partition Cols: []]                           +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#35, sex#36, age#37, occupation#38, zipcode#39], Partition Cols: []]
+
+22/05/12 16:46:44 WARN PlanChangeLogger:
+=== Applying Rule org.apache.spark.sql.catalyst.optimizer.ColumnPruning ===
+ Aggregate [age#32], [age#32]                                                                                                                                                                         Aggregate [age#32], [age#32]
+ +- Project [age#32]                                                                                                                                                                                  +- Project [age#32]
+    +- Sort [x#29 ASC NULLS FIRST], true                                                                                                                                                                 +- Sort [x#29 ASC NULLS FIRST], true
+       +- Project [age#32, 1.0 AS x#29]                                                                                                                                                                     +- Project [age#32, 1.0 AS x#29]
+          +- Join LeftAnti, (age#32 <=> age#37)                                                                                                                                                                +- Join LeftAnti, (age#32 <=> age#37)
+!            :- Filter ((age#32 > 20) AND (1 = 1))                                                                                                                                                                :- Project [age#32]
+!            :  +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#30, sex#31, age#32, occupation#33, zipcode#34], Partition Cols: []]                  :  +- Filter ((age#32 > 20) AND (1 = 1))
+!            +- Project [age#37]                                                                                                                                                                                  :     +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#30, sex#31, age#32, occupation#33, zipcode#34], Partition Cols: []]
+!               +- Filter (age#37 = 30)                                                                                                                                                                           +- Project [age#37]
+!                  +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#35, sex#36, age#37, occupation#38, zipcode#39], Partition Cols: []]                  +- Filter (age#37 = 30)
+!                                                                                                                                                                                                                       +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#35, sex#36, age#37, occupation#38, zipcode#39], Partition Cols: []]
+
+22/05/12 16:46:44 WARN PlanChangeLogger:
+=== Applying Rule org.apache.spark.sql.catalyst.optimizer.FoldablePropagation ===
+ Aggregate [age#32], [age#32]                                                                                                                                                                         Aggregate [age#32], [age#32]
+ +- Project [age#32]                                                                                                                                                                                  +- Project [age#32]
+!   +- Sort [x#29 ASC NULLS FIRST], true                                                                                                                                                                 +- Sort [1.0 ASC NULLS FIRST], true
+       +- Project [age#32, 1.0 AS x#29]                                                                                                                                                                     +- Project [age#32, 1.0 AS x#29]
+          +- Join LeftAnti, (age#32 <=> age#37)                                                                                                                                                                +- Join LeftAnti, (age#32 <=> age#37)
+             :- Project [age#32]                                                                                                                                                                                  :- Project [age#32]
+             :  +- Filter ((age#32 > 20) AND (1 = 1))                                                                                                                                                             :  +- Filter ((age#32 > 20) AND (1 = 1))
+             :     +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#30, sex#31, age#32, occupation#33, zipcode#34], Partition Cols: []]               :     +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#30, sex#31, age#32, occupation#33, zipcode#34], Partition Cols: []]
+             +- Project [age#37]                                                                                                                                                                                  +- Project [age#37]
+                +- Filter (age#37 = 30)                                                                                                                                                                              +- Filter (age#37 = 30)
+                   +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#35, sex#36, age#37, occupation#38, zipcode#39], Partition Cols: []]                     +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#35, sex#36, age#37, occupation#38, zipcode#39], Partition Cols: []]
+
+22/05/12 16:46:44 WARN PlanChangeLogger:
+=== Applying Rule org.apache.spark.sql.catalyst.optimizer.ConstantFolding ===
+ Aggregate [age#32], [age#32]                                                                                                                                                                         Aggregate [age#32], [age#32]
+ +- Project [age#32]                                                                                                                                                                                  +- Project [age#32]
+    +- Sort [1.0 ASC NULLS FIRST], true                                                                                                                                                                  +- Sort [1.0 ASC NULLS FIRST], true
+       +- Project [age#32, 1.0 AS x#29]                                                                                                                                                                     +- Project [age#32, 1.0 AS x#29]
+          +- Join LeftAnti, (age#32 <=> age#37)                                                                                                                                                                +- Join LeftAnti, (age#32 <=> age#37)
+             :- Project [age#32]                                                                                                                                                                                  :- Project [age#32]
+!            :  +- Filter ((age#32 > 20) AND (1 = 1))                                                                                                                                                             :  +- Filter ((age#32 > 20) AND true)
+             :     +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#30, sex#31, age#32, occupation#33, zipcode#34], Partition Cols: []]               :     +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#30, sex#31, age#32, occupation#33, zipcode#34], Partition Cols: []]
+             +- Project [age#37]                                                                                                                                                                                  +- Project [age#37]
+                +- Filter (age#37 = 30)                                                                                                                                                                              +- Filter (age#37 = 30)
+                   +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#35, sex#36, age#37, occupation#38, zipcode#39], Partition Cols: []]                     +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#35, sex#36, age#37, occupation#38, zipcode#39], Partition Cols: []]
+
+22/05/12 16:46:44 WARN PlanChangeLogger:
+=== Applying Rule org.apache.spark.sql.catalyst.optimizer.BooleanSimplification ===
+ Aggregate [age#32], [age#32]                                                                                                                                                                         Aggregate [age#32], [age#32]
+ +- Project [age#32]                                                                                                                                                                                  +- Project [age#32]
+    +- Sort [1.0 ASC NULLS FIRST], true                                                                                                                                                                  +- Sort [1.0 ASC NULLS FIRST], true
+       +- Project [age#32, 1.0 AS x#29]                                                                                                                                                                     +- Project [age#32, 1.0 AS x#29]
+          +- Join LeftAnti, (age#32 <=> age#37)                                                                                                                                                                +- Join LeftAnti, (age#32 <=> age#37)
+             :- Project [age#32]                                                                                                                                                                                  :- Project [age#32]
+!            :  +- Filter ((age#32 > 20) AND true)                                                                                                                                                                :  +- Filter (age#32 > 20)
+             :     +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#30, sex#31, age#32, occupation#33, zipcode#34], Partition Cols: []]               :     +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#30, sex#31, age#32, occupation#33, zipcode#34], Partition Cols: []]
+             +- Project [age#37]                                                                                                                                                                                  +- Project [age#37]
+                +- Filter (age#37 = 30)                                                                                                                                                                              +- Filter (age#37 = 30)
+                   +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#35, sex#36, age#37, occupation#38, zipcode#39], Partition Cols: []]                     +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#35, sex#36, age#37, occupation#38, zipcode#39], Partition Cols: []]
+
+22/05/12 16:46:44 WARN PlanChangeLogger:
+=== Applying Rule org.apache.spark.sql.catalyst.optimizer.PushDownLeftSemiAntiJoin ===
+ Aggregate [age#32], [age#32]                                                                                                                                                                         Aggregate [age#32], [age#32]
+ +- Project [age#32]                                                                                                                                                                                  +- Project [age#32]
+    +- Sort [1.0 ASC NULLS FIRST], true                                                                                                                                                                  +- Sort [1.0 ASC NULLS FIRST], true
+       +- Project [age#32, 1.0 AS x#29]                                                                                                                                                                     +- Project [age#32, 1.0 AS x#29]
+!         +- Join LeftAnti, (age#32 <=> age#37)                                                                                                                                                                +- Project [age#32]
+!            :- Project [age#32]                                                                                                                                                                                  +- Join LeftAnti, (age#32 <=> age#37)
+!            :  +- Filter (age#32 > 20)                                                                                                                                                                              :- Filter (age#32 > 20)
+!            :     +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#30, sex#31, age#32, occupation#33, zipcode#34], Partition Cols: []]                  :  +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#30, sex#31, age#32, occupation#33, zipcode#34], Partition Cols: []]
+!            +- Project [age#37]                                                                                                                                                                                     +- Project [age#37]
+!               +- Filter (age#37 = 30)                                                                                                                                                                                 +- Filter (age#37 = 30)
+!                  +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#35, sex#36, age#37, occupation#38, zipcode#39], Partition Cols: []]                        +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#35, sex#36, age#37, occupation#38, zipcode#39], Partition Cols: []]
+
+22/05/12 16:46:44 WARN PlanChangeLogger:
+=== Applying Rule org.apache.spark.sql.catalyst.optimizer.ColumnPruning ===
+ Aggregate [age#32], [age#32]                                                                                                                                                                            Aggregate [age#32], [age#32]
+ +- Project [age#32]                                                                                                                                                                                     +- Project [age#32]
+    +- Sort [1.0 ASC NULLS FIRST], true                                                                                                                                                                     +- Sort [1.0 ASC NULLS FIRST], true
+!      +- Project [age#32, 1.0 AS x#29]                                                                                                                                                                        +- Project [age#32]
+          +- Project [age#32]                                                                                                                                                                                     +- Project [age#32]
+!            +- Join LeftAnti, (age#32 <=> age#37)                                                                                                                                                                   +- Project [age#32]
+!               :- Filter (age#32 > 20)                                                                                                                                                                                 +- Join LeftAnti, (age#32 <=> age#37)
+!               :  +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#30, sex#31, age#32, occupation#33, zipcode#34], Partition Cols: []]                        :- Project [age#32]
+!               +- Project [age#37]                                                                                                                                                                                        :  +- Filter (age#32 > 20)
+!                  +- Filter (age#37 = 30)                                                                                                                                                                                 :     +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#30, sex#31, age#32, occupation#33, zipcode#34], Partition Cols: []]
+!                     +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#35, sex#36, age#37, occupation#38, zipcode#39], Partition Cols: []]                     +- Project [age#37]
+!                                                                                                                                                                                                                             +- Filter (age#37 = 30)
+!                                                                                                                                                                                                                                +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#35, sex#36, age#37, occupation#38, zipcode#39], Partition Cols: []]
+
+22/05/12 16:46:44 WARN PlanChangeLogger:
+=== Applying Rule org.apache.spark.sql.catalyst.optimizer.CollapseProject ===
+ Aggregate [age#32], [age#32]                                                                                                                                                                               Aggregate [age#32], [age#32]
+ +- Project [age#32]                                                                                                                                                                                        +- Project [age#32]
+    +- Sort [1.0 ASC NULLS FIRST], true                                                                                                                                                                        +- Sort [1.0 ASC NULLS FIRST], true
+       +- Project [age#32]                                                                                                                                                                                        +- Project [age#32]
+!         +- Project [age#32]                                                                                                                                                                                        +- Join LeftAnti, (age#32 <=> age#37)
+!            +- Project [age#32]                                                                                                                                                                                        :- Project [age#32]
+!               +- Join LeftAnti, (age#32 <=> age#37)                                                                                                                                                                   :  +- Filter (age#32 > 20)
+!                  :- Project [age#32]                                                                                                                                                                                  :     +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#30, sex#31, age#32, occupation#33, zipcode#34], Partition Cols: []]
+!                  :  +- Filter (age#32 > 20)                                                                                                                                                                           +- Project [age#37]
+!                  :     +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#30, sex#31, age#32, occupation#33, zipcode#34], Partition Cols: []]                  +- Filter (age#37 = 30)
+!                  +- Project [age#37]                                                                                                                                                                                        +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#35, sex#36, age#37, occupation#38, zipcode#39], Partition Cols: []]
+!                     +- Filter (age#37 = 30)
+!                        +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#35, sex#36, age#37, occupation#38, zipcode#39], Partition Cols: []]
+
+22/05/12 16:46:44 WARN PlanChangeLogger:
+=== Applying Rule org.apache.spark.sql.catalyst.optimizer.RemoveNoopOperators ===
+ Aggregate [age#32], [age#32]                                                                                                                                                                         Aggregate [age#32], [age#32]
+!+- Project [age#32]                                                                                                                                                                                  +- Sort [1.0 ASC NULLS FIRST], true
+!   +- Sort [1.0 ASC NULLS FIRST], true                                                                                                                                                                  +- Join LeftAnti, (age#32 <=> age#37)
+!      +- Project [age#32]                                                                                                                                                                                  :- Project [age#32]
+!         +- Join LeftAnti, (age#32 <=> age#37)                                                                                                                                                             :  +- Filter (age#32 > 20)
+!            :- Project [age#32]                                                                                                                                                                            :     +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#30, sex#31, age#32, occupation#33, zipcode#34], Partition Cols: []]
+!            :  +- Filter (age#32 > 20)                                                                                                                                                                     +- Project [age#37]
+!            :     +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#30, sex#31, age#32, occupation#33, zipcode#34], Partition Cols: []]            +- Filter (age#37 = 30)
+!            +- Project [age#37]                                                                                                                                                                                  +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#35, sex#36, age#37, occupation#38, zipcode#39], Partition Cols: []]
+!               +- Filter (age#37 = 30)
+!                  +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#35, sex#36, age#37, occupation#38, zipcode#39], Partition Cols: []]
+
+22/05/12 16:46:44 WARN PlanChangeLogger:
+=== Applying Rule org.apache.spark.sql.catalyst.optimizer.PushDownLeftSemiAntiJoin ===
+ Aggregate [age#32], [age#32]                                                                                                                                                                   Aggregate [age#32], [age#32]
+ +- Sort [1.0 ASC NULLS FIRST], true                                                                                                                                                            +- Sort [1.0 ASC NULLS FIRST], true
+!   +- Join LeftAnti, (age#32 <=> age#37)                                                                                                                                                          +- Project [age#32]
+!      :- Project [age#32]                                                                                                                                                                            +- Join LeftAnti, (age#32 <=> age#37)
+!      :  +- Filter (age#32 > 20)                                                                                                                                                                        :- Filter (age#32 > 20)
+!      :     +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#30, sex#31, age#32, occupation#33, zipcode#34], Partition Cols: []]            :  +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#30, sex#31, age#32, occupation#33, zipcode#34], Partition Cols: []]
+!      +- Project [age#37]                                                                                                                                                                               +- Project [age#37]
+!         +- Filter (age#37 = 30)                                                                                                                                                                           +- Filter (age#37 = 30)
+!            +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#35, sex#36, age#37, occupation#38, zipcode#39], Partition Cols: []]                  +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#35, sex#36, age#37, occupation#38, zipcode#39], Partition Cols: []]
+
+22/05/12 16:46:44 WARN PlanChangeLogger:
+=== Applying Rule org.apache.spark.sql.catalyst.optimizer.ColumnPruning ===
+ Aggregate [age#32], [age#32]                                                                                                                                                                      Aggregate [age#32], [age#32]
+ +- Sort [1.0 ASC NULLS FIRST], true                                                                                                                                                               +- Sort [1.0 ASC NULLS FIRST], true
+    +- Project [age#32]                                                                                                                                                                               +- Project [age#32]
+       +- Join LeftAnti, (age#32 <=> age#37)                                                                                                                                                             +- Join LeftAnti, (age#32 <=> age#37)
+!         :- Filter (age#32 > 20)                                                                                                                                                                           :- Project [age#32]
+!         :  +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#30, sex#31, age#32, occupation#33, zipcode#34], Partition Cols: []]               :  +- Filter (age#32 > 20)
+!         +- Project [age#37]                                                                                                                                                                               :     +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#30, sex#31, age#32, occupation#33, zipcode#34], Partition Cols: []]
+!            +- Filter (age#37 = 30)                                                                                                                                                                        +- Project [age#37]
+!               +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#35, sex#36, age#37, occupation#38, zipcode#39], Partition Cols: []]               +- Filter (age#37 = 30)
+!                                                                                                                                                                                                                 +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#35, sex#36, age#37, occupation#38, zipcode#39], Partition Cols: []]
+
+22/05/12 16:46:44 WARN PlanChangeLogger:
+=== Applying Rule org.apache.spark.sql.catalyst.optimizer.RemoveNoopOperators ===
+ Aggregate [age#32], [age#32]                                                                                                                                                                      Aggregate [age#32], [age#32]
+ +- Sort [1.0 ASC NULLS FIRST], true                                                                                                                                                               +- Sort [1.0 ASC NULLS FIRST], true
+!   +- Project [age#32]                                                                                                                                                                               +- Join LeftAnti, (age#32 <=> age#37)
+!      +- Join LeftAnti, (age#32 <=> age#37)                                                                                                                                                             :- Project [age#32]
+!         :- Project [age#32]                                                                                                                                                                            :  +- Filter (age#32 > 20)
+!         :  +- Filter (age#32 > 20)                                                                                                                                                                     :     +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#30, sex#31, age#32, occupation#33, zipcode#34], Partition Cols: []]
+!         :     +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#30, sex#31, age#32, occupation#33, zipcode#34], Partition Cols: []]         +- Project [age#37]
+!         +- Project [age#37]                                                                                                                                                                               +- Filter (age#37 = 30)
+!            +- Filter (age#37 = 30)                                                                                                                                                                           +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#35, sex#36, age#37, occupation#38, zipcode#39], Partition Cols: []]
+!               +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#35, sex#36, age#37, occupation#38, zipcode#39], Partition Cols: []]
+
+22/05/12 16:46:44 WARN PlanChangeLogger:
+=== Result of Batch Operator Optimization before Inferring Filters ===
+ Aggregate [age#32], [age#32]                                                                                                                                                                         Aggregate [age#32], [age#32]
+!+- Join LeftAnti, (age#32 <=> age#37)                                                                                                                                                                +- Sort [1.0 ASC NULLS FIRST], true
+!   :- Project [age#32]                                                                                                                                                                                  +- Join LeftAnti, (age#32 <=> age#37)
+!   :  +- Filter (1 = 1)                                                                                                                                                                                    :- Project [age#32]
+!   :     +- Sort [x#29 ASC NULLS FIRST], true                                                                                                                                                              :  +- Filter (age#32 > 20)
+!   :        +- Project [age#32, 1.0 AS x#29]                                                                                                                                                               :     +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#30, sex#31, age#32, occupation#33, zipcode#34], Partition Cols: []]
+!   :           +- Filter (age#32 > 20)                                                                                                                                                                     +- Project [age#37]
+!   :              +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#30, sex#31, age#32, occupation#33, zipcode#34], Partition Cols: []]            +- Filter (age#37 = 30)
+!   +- Project [age#37]                                                                                                                                                                                           +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#35, sex#36, age#37, occupation#38, zipcode#39], Partition Cols: []]
+!      +- Filter (age#37 = 30)
+!         +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#35, sex#36, age#37, occupation#38, zipcode#39], Partition Cols: []]
+
+22/05/12 16:46:44 WARN PlanChangeLogger:
+=== Applying Rule org.apache.spark.sql.catalyst.optimizer.InferFiltersFromConstraints ===
+ Aggregate [age#32], [age#32]                                                                                                                                                                   Aggregate [age#32], [age#32]
+ +- Sort [1.0 ASC NULLS FIRST], true                                                                                                                                                            +- Sort [1.0 ASC NULLS FIRST], true
+    +- Join LeftAnti, (age#32 <=> age#37)                                                                                                                                                          +- Join LeftAnti, (age#32 <=> age#37)
+       :- Project [age#32]                                                                                                                                                                            :- Project [age#32]
+!      :  +- Filter (age#32 > 20)                                                                                                                                                                     :  +- Filter (isnotnull(age#32) AND (age#32 > 20))
+       :     +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#30, sex#31, age#32, occupation#33, zipcode#34], Partition Cols: []]         :     +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#30, sex#31, age#32, occupation#33, zipcode#34], Partition Cols: []]
+       +- Project [age#37]                                                                                                                                                                            +- Project [age#37]
+!         +- Filter (age#37 = 30)                                                                                                                                                                        +- Filter (isnotnull(age#37) AND (age#37 = 30))
+             +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#35, sex#36, age#37, occupation#38, zipcode#39], Partition Cols: []]               +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#35, sex#36, age#37, occupation#38, zipcode#39], Partition Cols: []]
+
+22/05/12 16:46:44 WARN PlanChangeLogger:
+=== Result of Batch Infer Filters ===
+ Aggregate [age#32], [age#32]                                                                                                                                                                   Aggregate [age#32], [age#32]
+ +- Sort [1.0 ASC NULLS FIRST], true                                                                                                                                                            +- Sort [1.0 ASC NULLS FIRST], true
+    +- Join LeftAnti, (age#32 <=> age#37)                                                                                                                                                          +- Join LeftAnti, (age#32 <=> age#37)
+       :- Project [age#32]                                                                                                                                                                            :- Project [age#32]
+!      :  +- Filter (age#32 > 20)                                                                                                                                                                     :  +- Filter (isnotnull(age#32) AND (age#32 > 20))
+       :     +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#30, sex#31, age#32, occupation#33, zipcode#34], Partition Cols: []]         :     +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#30, sex#31, age#32, occupation#33, zipcode#34], Partition Cols: []]
+       +- Project [age#37]                                                                                                                                                                            +- Project [age#37]
+!         +- Filter (age#37 = 30)                                                                                                                                                                        +- Filter (isnotnull(age#37) AND (age#37 = 30))
+             +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#35, sex#36, age#37, occupation#38, zipcode#39], Partition Cols: []]               +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#35, sex#36, age#37, occupation#38, zipcode#39], Partition Cols: []]
+
+22/05/12 16:46:44 WARN PlanChangeLogger:
+=== Applying Rule org.apache.spark.sql.catalyst.optimizer.PushDownLeftSemiAntiJoin ===
+ Aggregate [age#32], [age#32]                                                                                                                                                                   Aggregate [age#32], [age#32]
+ +- Sort [1.0 ASC NULLS FIRST], true                                                                                                                                                            +- Sort [1.0 ASC NULLS FIRST], true
+!   +- Join LeftAnti, (age#32 <=> age#37)                                                                                                                                                          +- Project [age#32]
+!      :- Project [age#32]                                                                                                                                                                            +- Join LeftAnti, (age#32 <=> age#37)
+!      :  +- Filter (isnotnull(age#32) AND (age#32 > 20))                                                                                                                                                :- Filter (isnotnull(age#32) AND (age#32 > 20))
+!      :     +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#30, sex#31, age#32, occupation#33, zipcode#34], Partition Cols: []]            :  +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#30, sex#31, age#32, occupation#33, zipcode#34], Partition Cols: []]
+!      +- Project [age#37]                                                                                                                                                                               +- Project [age#37]
+!         +- Filter (isnotnull(age#37) AND (age#37 = 30))                                                                                                                                                   +- Filter (isnotnull(age#37) AND (age#37 = 30))
+!            +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#35, sex#36, age#37, occupation#38, zipcode#39], Partition Cols: []]                  +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#35, sex#36, age#37, occupation#38, zipcode#39], Partition Cols: []]
+
+22/05/12 16:46:44 WARN PlanChangeLogger:
+=== Applying Rule org.apache.spark.sql.catalyst.optimizer.ColumnPruning ===
+ Aggregate [age#32], [age#32]                                                                                                                                                                      Aggregate [age#32], [age#32]
+ +- Sort [1.0 ASC NULLS FIRST], true                                                                                                                                                               +- Sort [1.0 ASC NULLS FIRST], true
+    +- Project [age#32]                                                                                                                                                                               +- Project [age#32]
+       +- Join LeftAnti, (age#32 <=> age#37)                                                                                                                                                             +- Join LeftAnti, (age#32 <=> age#37)
+!         :- Filter (isnotnull(age#32) AND (age#32 > 20))                                                                                                                                                   :- Project [age#32]
+!         :  +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#30, sex#31, age#32, occupation#33, zipcode#34], Partition Cols: []]               :  +- Filter (isnotnull(age#32) AND (age#32 > 20))
+!         +- Project [age#37]                                                                                                                                                                               :     +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#30, sex#31, age#32, occupation#33, zipcode#34], Partition Cols: []]
+!            +- Filter (isnotnull(age#37) AND (age#37 = 30))                                                                                                                                                +- Project [age#37]
+!               +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#35, sex#36, age#37, occupation#38, zipcode#39], Partition Cols: []]               +- Filter (isnotnull(age#37) AND (age#37 = 30))
+!                                                                                                                                                                                                                 +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#35, sex#36, age#37, occupation#38, zipcode#39], Partition Cols: []]
+
+22/05/12 16:46:44 WARN PlanChangeLogger:
+=== Applying Rule org.apache.spark.sql.catalyst.optimizer.RemoveNoopOperators ===
+ Aggregate [age#32], [age#32]                                                                                                                                                                      Aggregate [age#32], [age#32]
+ +- Sort [1.0 ASC NULLS FIRST], true                                                                                                                                                               +- Sort [1.0 ASC NULLS FIRST], true
+!   +- Project [age#32]                                                                                                                                                                               +- Join LeftAnti, (age#32 <=> age#37)
+!      +- Join LeftAnti, (age#32 <=> age#37)                                                                                                                                                             :- Project [age#32]
+!         :- Project [age#32]                                                                                                                                                                            :  +- Filter (isnotnull(age#32) AND (age#32 > 20))
+!         :  +- Filter (isnotnull(age#32) AND (age#32 > 20))                                                                                                                                             :     +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#30, sex#31, age#32, occupation#33, zipcode#34], Partition Cols: []]
+!         :     +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#30, sex#31, age#32, occupation#33, zipcode#34], Partition Cols: []]         +- Project [age#37]
+!         +- Project [age#37]                                                                                                                                                                               +- Filter (isnotnull(age#37) AND (age#37 = 30))
+!            +- Filter (isnotnull(age#37) AND (age#37 = 30))                                                                                                                                                   +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#35, sex#36, age#37, occupation#38, zipcode#39], Partition Cols: []]
+!               +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#35, sex#36, age#37, occupation#38, zipcode#39], Partition Cols: []]
+
+22/05/12 16:46:44 WARN PlanChangeLogger: Batch Operator Optimization after Inferring Filters has no effect.
+22/05/12 16:46:44 WARN PlanChangeLogger: Batch Push extra predicate through join has no effect.
+22/05/12 16:46:44 WARN PlanChangeLogger: Batch Early Filter and Projection Push-Down has no effect.
+22/05/12 16:46:44 WARN PlanChangeLogger: Batch Update CTE Relation Stats has no effect.
+22/05/12 16:46:44 WARN PlanChangeLogger: Batch Join Reorder has no effect.
+22/05/12 16:46:44 WARN PlanChangeLogger:
+=== Applying Rule org.apache.spark.sql.catalyst.optimizer.EliminateSorts ===
+ Aggregate [age#32], [age#32]                                                                                                                                                                   Aggregate [age#32], [age#32]
+!+- Sort [1.0 ASC NULLS FIRST], true                                                                                                                                                            +- Join LeftAnti, (age#32 <=> age#37)
+!   +- Join LeftAnti, (age#32 <=> age#37)                                                                                                                                                          :- Project [age#32]
+!      :- Project [age#32]                                                                                                                                                                         :  +- Filter (isnotnull(age#32) AND (age#32 > 20))
+!      :  +- Filter (isnotnull(age#32) AND (age#32 > 20))                                                                                                                                          :     +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#30, sex#31, age#32, occupation#33, zipcode#34], Partition Cols: []]
+!      :     +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#30, sex#31, age#32, occupation#33, zipcode#34], Partition Cols: []]      +- Project [age#37]
+!      +- Project [age#37]                                                                                                                                                                            +- Filter (isnotnull(age#37) AND (age#37 = 30))
+!         +- Filter (isnotnull(age#37) AND (age#37 = 30))                                                                                                                                                +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#35, sex#36, age#37, occupation#38, zipcode#39], Partition Cols: []]
+!            +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#35, sex#36, age#37, occupation#38, zipcode#39], Partition Cols: []]
+
+22/05/12 16:46:44 WARN PlanChangeLogger:
+=== Result of Batch Eliminate Sorts ===
+ Aggregate [age#32], [age#32]                                                                                                                                                                   Aggregate [age#32], [age#32]
+!+- Sort [1.0 ASC NULLS FIRST], true                                                                                                                                                            +- Join LeftAnti, (age#32 <=> age#37)
+!   +- Join LeftAnti, (age#32 <=> age#37)                                                                                                                                                          :- Project [age#32]
+!      :- Project [age#32]                                                                                                                                                                         :  +- Filter (isnotnull(age#32) AND (age#32 > 20))
+!      :  +- Filter (isnotnull(age#32) AND (age#32 > 20))                                                                                                                                          :     +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#30, sex#31, age#32, occupation#33, zipcode#34], Partition Cols: []]
+!      :     +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#30, sex#31, age#32, occupation#33, zipcode#34], Partition Cols: []]      +- Project [age#37]
+!      +- Project [age#37]                                                                                                                                                                            +- Filter (isnotnull(age#37) AND (age#37 = 30))
+!         +- Filter (isnotnull(age#37) AND (age#37 = 30))                                                                                                                                                +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#35, sex#36, age#37, occupation#38, zipcode#39], Partition Cols: []]
+!            +- HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#35, sex#36, age#37, occupation#38, zipcode#39], Partition Cols: []]
+
+22/05/12 16:46:44 WARN PlanChangeLogger: Batch Decimal Optimizations has no effect.
+22/05/12 16:46:44 WARN PlanChangeLogger: Batch Distinct Aggregate Rewrite has no effect.
+22/05/12 16:46:44 WARN PlanChangeLogger: Batch Object Expressions Optimization has no effect.
+22/05/12 16:46:44 WARN PlanChangeLogger: Batch LocalRelation has no effect.
+22/05/12 16:46:44 WARN PlanChangeLogger: Batch Check Cartesian Products has no effect.
+22/05/12 16:46:44 WARN PlanChangeLogger: Batch RewriteSubquery has no effect.
+22/05/12 16:46:44 WARN PlanChangeLogger: Batch NormalizeFloatingNumbers has no effect.
+22/05/12 16:46:44 WARN PlanChangeLogger: Batch ReplaceUpdateFieldsExpression has no effect.
+22/05/12 16:46:44 WARN PlanChangeLogger: Batch Optimize Metadata Only Query has no effect.
+22/05/12 16:46:44 WARN PlanChangeLogger: Batch PartitionPruning has no effect.
+22/05/12 16:46:44 WARN PlanChangeLogger: Batch Pushdown Filters from PartitionPruning has no effect.
+22/05/12 16:46:44 WARN PlanChangeLogger: Batch Cleanup filters that cannot be pushed down has no effect.
+22/05/12 16:46:44 WARN PlanChangeLogger: Batch Extract Python UDFs has no effect.
+22/05/12 16:46:44 WARN PlanChangeLogger: Batch User Provided Optimizers has no effect.
+22/05/12 16:46:44 WARN PlanChangeLogger:
+=== Metrics of Executed Rules ===
+Total number of runs: 270
+Total time: 0.079514423 seconds
+Total number of effective runs: 21
+Total time of effective runs: 0.031780623 seconds
+
+22/05/12 16:46:44 WARN PlanChangeLogger:
+=== Applying Rule org.apache.spark.sql.execution.exchange.EnsureRequirements ===
+ HashAggregate(keys=[age#32], functions=[], output=[age#32])                                                                                                                                                                    HashAggregate(keys=[age#32], functions=[], output=[age#32])
+!+- HashAggregate(keys=[age#32], functions=[], output=[age#32])                                                                                                                                                                 +- Exchange hashpartitioning(age#32, 200), ENSURE_REQUIREMENTS, [id=#134]
+!   +- SortMergeJoin [coalesce(age#32, 0), isnull(age#32)], [coalesce(age#37, 0), isnull(age#37)], LeftAnti                                                                                                                        +- HashAggregate(keys=[age#32], functions=[], output=[age#32])
+!      :- Filter (isnotnull(age#32) AND (age#32 > 20))                                                                                                                                                                                +- SortMergeJoin [coalesce(age#32, 0), isnull(age#32)], [coalesce(age#37, 0), isnull(age#37)], LeftAnti
+!      :  +- Scan hive testsql.t_user [age#32], HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#30, sex#31, age#32, occupation#33, zipcode#34], Partition Cols: []]            :- Sort [coalesce(age#32, 0) ASC NULLS FIRST, isnull(age#32) ASC NULLS FIRST], false, 0
+!      +- Filter (isnotnull(age#37) AND (age#37 = 30))                                                                                                                                                                                   :  +- Exchange hashpartitioning(coalesce(age#32, 0), isnull(age#32), 200), ENSURE_REQUIREMENTS, [id=#127]
+!         +- Scan hive testsql.t_user [age#37], HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#35, sex#36, age#37, occupation#38, zipcode#39], Partition Cols: []]            :     +- Filter (isnotnull(age#32) AND (age#32 > 20))
+!                                                                                                                                                                                                                                        :        +- Scan hive testsql.t_user [age#32], HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#30, sex#31, age#32, occupation#33, zipcode#34], Partition Cols: []]
+!                                                                                                                                                                                                                                        +- Sort [coalesce(age#37, 0) ASC NULLS FIRST, isnull(age#37) ASC NULLS FIRST], false, 0
+!                                                                                                                                                                                                                                           +- Exchange hashpartitioning(coalesce(age#37, 0), isnull(age#37), 200), ENSURE_REQUIREMENTS, [id=#128]
+!                                                                                                                                                                                                                                              +- Filter (isnotnull(age#37) AND (age#37 = 30))
+!                                                                                                                                                                                                                                                 +- Scan hive testsql.t_user [age#37], HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#35, sex#36, age#37, occupation#38, zipcode#39], Partition Cols: []]
+
+22/05/12 16:46:44 WARN PlanChangeLogger:
+=== Result of Batch AQE Preparations ===
+ HashAggregate(keys=[age#32], functions=[], output=[age#32])                                                                                                                                                                    HashAggregate(keys=[age#32], functions=[], output=[age#32])
+!+- HashAggregate(keys=[age#32], functions=[], output=[age#32])                                                                                                                                                                 +- Exchange hashpartitioning(age#32, 200), ENSURE_REQUIREMENTS, [id=#134]
+!   +- SortMergeJoin [coalesce(age#32, 0), isnull(age#32)], [coalesce(age#37, 0), isnull(age#37)], LeftAnti                                                                                                                        +- HashAggregate(keys=[age#32], functions=[], output=[age#32])
+!      :- Filter (isnotnull(age#32) AND (age#32 > 20))                                                                                                                                                                                +- SortMergeJoin [coalesce(age#32, 0), isnull(age#32)], [coalesce(age#37, 0), isnull(age#37)], LeftAnti
+!      :  +- Scan hive testsql.t_user [age#32], HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#30, sex#31, age#32, occupation#33, zipcode#34], Partition Cols: []]            :- Sort [coalesce(age#32, 0) ASC NULLS FIRST, isnull(age#32) ASC NULLS FIRST], false, 0
+!      +- Filter (isnotnull(age#37) AND (age#37 = 30))                                                                                                                                                                                   :  +- Exchange hashpartitioning(coalesce(age#32, 0), isnull(age#32), 200), ENSURE_REQUIREMENTS, [id=#127]
+!         +- Scan hive testsql.t_user [age#37], HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#35, sex#36, age#37, occupation#38, zipcode#39], Partition Cols: []]            :     +- Filter (isnotnull(age#32) AND (age#32 > 20))
+!                                                                                                                                                                                                                                        :        +- Scan hive testsql.t_user [age#32], HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#30, sex#31, age#32, occupation#33, zipcode#34], Partition Cols: []]
+!                                                                                                                                                                                                                                        +- Sort [coalesce(age#37, 0) ASC NULLS FIRST, isnull(age#37) ASC NULLS FIRST], false, 0
+!                                                                                                                                                                                                                                           +- Exchange hashpartitioning(coalesce(age#37, 0), isnull(age#37), 200), ENSURE_REQUIREMENTS, [id=#128]
+!                                                                                                                                                                                                                                              +- Filter (isnotnull(age#37) AND (age#37 = 30))
+!                                                                                                                                                                                                                                                 +- Scan hive testsql.t_user [age#37], HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#35, sex#36, age#37, occupation#38, zipcode#39], Partition Cols: []]
+
+22/05/12 16:46:44 WARN PlanChangeLogger:
+=== Applying Rule org.apache.spark.sql.execution.adaptive.InsertAdaptiveSparkPlan ===
+!HashAggregate(keys=[age#32], functions=[], output=[age#32])                                                                                                                                                                    AdaptiveSparkPlan isFinalPlan=false
+ +- HashAggregate(keys=[age#32], functions=[], output=[age#32])                                                                                                                                                                 +- HashAggregate(keys=[age#32], functions=[], output=[age#32])
+!   +- SortMergeJoin [coalesce(age#32, 0), isnull(age#32)], [coalesce(age#37, 0), isnull(age#37)], LeftAnti                                                                                                                        +- Exchange hashpartitioning(age#32, 200), ENSURE_REQUIREMENTS, [id=#134]
+!      :- Filter (isnotnull(age#32) AND (age#32 > 20))                                                                                                                                                                                +- HashAggregate(keys=[age#32], functions=[], output=[age#32])
+!      :  +- Scan hive testsql.t_user [age#32], HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#30, sex#31, age#32, occupation#33, zipcode#34], Partition Cols: []]            +- SortMergeJoin [coalesce(age#32, 0), isnull(age#32)], [coalesce(age#37, 0), isnull(age#37)], LeftAnti
+!      +- Filter (isnotnull(age#37) AND (age#37 = 30))                                                                                                                                                                                      :- Sort [coalesce(age#32, 0) ASC NULLS FIRST, isnull(age#32) ASC NULLS FIRST], false, 0
+!         +- Scan hive testsql.t_user [age#37], HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#35, sex#36, age#37, occupation#38, zipcode#39], Partition Cols: []]               :  +- Exchange hashpartitioning(coalesce(age#32, 0), isnull(age#32), 200), ENSURE_REQUIREMENTS, [id=#127]
+!                                                                                                                                                                                                                                           :     +- Filter (isnotnull(age#32) AND (age#32 > 20))
+!                                                                                                                                                                                                                                           :        +- Scan hive testsql.t_user [age#32], HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#30, sex#31, age#32, occupation#33, zipcode#34], Partition Cols: []]
+!                                                                                                                                                                                                                                           +- Sort [coalesce(age#37, 0) ASC NULLS FIRST, isnull(age#37) ASC NULLS FIRST], false, 0
+!                                                                                                                                                                                                                                              +- Exchange hashpartitioning(coalesce(age#37, 0), isnull(age#37), 200), ENSURE_REQUIREMENTS, [id=#128]
+!                                                                                                                                                                                                                                                 +- Filter (isnotnull(age#37) AND (age#37 = 30))
+!                                                                                                                                                                                                                                                    +- Scan hive testsql.t_user [age#37], HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#35, sex#36, age#37, occupation#38, zipcode#39], Partition Cols: []]
+
+22/05/12 16:46:44 WARN PlanChangeLogger:
+=== Result of Batch Preparations ===
+!HashAggregate(keys=[age#32], functions=[], output=[age#32])                                                                                                                                                                    AdaptiveSparkPlan isFinalPlan=false
+ +- HashAggregate(keys=[age#32], functions=[], output=[age#32])                                                                                                                                                                 +- HashAggregate(keys=[age#32], functions=[], output=[age#32])
+!   +- SortMergeJoin [coalesce(age#32, 0), isnull(age#32)], [coalesce(age#37, 0), isnull(age#37)], LeftAnti                                                                                                                        +- Exchange hashpartitioning(age#32, 200), ENSURE_REQUIREMENTS, [id=#134]
+!      :- Filter (isnotnull(age#32) AND (age#32 > 20))                                                                                                                                                                                +- HashAggregate(keys=[age#32], functions=[], output=[age#32])
+!      :  +- Scan hive testsql.t_user [age#32], HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#30, sex#31, age#32, occupation#33, zipcode#34], Partition Cols: []]            +- SortMergeJoin [coalesce(age#32, 0), isnull(age#32)], [coalesce(age#37, 0), isnull(age#37)], LeftAnti
+!      +- Filter (isnotnull(age#37) AND (age#37 = 30))                                                                                                                                                                                      :- Sort [coalesce(age#32, 0) ASC NULLS FIRST, isnull(age#32) ASC NULLS FIRST], false, 0
+!         +- Scan hive testsql.t_user [age#37], HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#35, sex#36, age#37, occupation#38, zipcode#39], Partition Cols: []]               :  +- Exchange hashpartitioning(coalesce(age#32, 0), isnull(age#32), 200), ENSURE_REQUIREMENTS, [id=#127]
+!                                                                                                                                                                                                                                           :     +- Filter (isnotnull(age#32) AND (age#32 > 20))
+!                                                                                                                                                                                                                                           :        +- Scan hive testsql.t_user [age#32], HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#30, sex#31, age#32, occupation#33, zipcode#34], Partition Cols: []]
+!                                                                                                                                                                                                                                           +- Sort [coalesce(age#37, 0) ASC NULLS FIRST, isnull(age#37) ASC NULLS FIRST], false, 0
+!                                                                                                                                                                                                                                              +- Exchange hashpartitioning(coalesce(age#37, 0), isnull(age#37), 200), ENSURE_REQUIREMENTS, [id=#128]
+!                                                                                                                                                                                                                                                 +- Filter (isnotnull(age#37) AND (age#37 = 30))
+!                                                                                                                                                                                                                                                    +- Scan hive testsql.t_user [age#37], HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#35, sex#36, age#37, occupation#38, zipcode#39], Partition Cols: []]
+
+22/05/12 16:46:44 WARN PlanChangeLogger: Batch AQE Query Stage Optimization has no effect.
+22/05/12 16:46:44 WARN PlanChangeLogger:
+=== Applying Rule org.apache.spark.sql.execution.CollapseCodegenStages ===
+!Exchange hashpartitioning(coalesce(age#32, 0), isnull(age#32), 200), ENSURE_REQUIREMENTS, [id=#127]                                                                                                                      Exchange hashpartitioning(coalesce(age#32, 0), isnull(age#32), 200), ENSURE_REQUIREMENTS, [id=#159]
+!+- Filter (isnotnull(age#32) AND (age#32 > 20))                                                                                                                                                                          +- *(1) Filter (isnotnull(age#32) AND (age#32 > 20))
+    +- Scan hive testsql.t_user [age#32], HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#30, sex#31, age#32, occupation#33, zipcode#34], Partition Cols: []]      +- Scan hive testsql.t_user [age#32], HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#30, sex#31, age#32, occupation#33, zipcode#34], Partition Cols: []]
+
+22/05/12 16:46:44 WARN PlanChangeLogger:
+=== Result of Batch AQE Post Stage Creation ===
+!Exchange hashpartitioning(coalesce(age#32, 0), isnull(age#32), 200), ENSURE_REQUIREMENTS, [id=#127]                                                                                                                      Exchange hashpartitioning(coalesce(age#32, 0), isnull(age#32), 200), ENSURE_REQUIREMENTS, [id=#159]
+!+- Filter (isnotnull(age#32) AND (age#32 > 20))                                                                                                                                                                          +- *(1) Filter (isnotnull(age#32) AND (age#32 > 20))
+    +- Scan hive testsql.t_user [age#32], HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#30, sex#31, age#32, occupation#33, zipcode#34], Partition Cols: []]      +- Scan hive testsql.t_user [age#32], HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#30, sex#31, age#32, occupation#33, zipcode#34], Partition Cols: []]
+
+22/05/12 16:46:44 WARN PlanChangeLogger: Batch AQE Query Stage Optimization has no effect.
+22/05/12 16:46:44 WARN PlanChangeLogger:
+=== Applying Rule org.apache.spark.sql.execution.CollapseCodegenStages ===
+!Exchange hashpartitioning(coalesce(age#37, 0), isnull(age#37), 200), ENSURE_REQUIREMENTS, [id=#128]                                                                                                                      Exchange hashpartitioning(coalesce(age#37, 0), isnull(age#37), 200), ENSURE_REQUIREMENTS, [id=#171]
+!+- Filter (isnotnull(age#37) AND (age#37 = 30))                                                                                                                                                                          +- *(2) Filter (isnotnull(age#37) AND (age#37 = 30))
+    +- Scan hive testsql.t_user [age#37], HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#35, sex#36, age#37, occupation#38, zipcode#39], Partition Cols: []]      +- Scan hive testsql.t_user [age#37], HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#35, sex#36, age#37, occupation#38, zipcode#39], Partition Cols: []]
+
+22/05/12 16:46:44 WARN PlanChangeLogger:
+=== Result of Batch AQE Post Stage Creation ===
+!Exchange hashpartitioning(coalesce(age#37, 0), isnull(age#37), 200), ENSURE_REQUIREMENTS, [id=#128]                                                                                                                      Exchange hashpartitioning(coalesce(age#37, 0), isnull(age#37), 200), ENSURE_REQUIREMENTS, [id=#171]
+!+- Filter (isnotnull(age#37) AND (age#37 = 30))                                                                                                                                                                          +- *(2) Filter (isnotnull(age#37) AND (age#37 = 30))
+    +- Scan hive testsql.t_user [age#37], HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#35, sex#36, age#37, occupation#38, zipcode#39], Partition Cols: []]      +- Scan hive testsql.t_user [age#37], HiveTableRelation [`testsql`.`t_user`, org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe, Data Cols: [id#35, sex#36, age#37, occupation#38, zipcode#39], Partition Cols: []]
+
+22/05/12 16:46:44 WARN PlanChangeLogger: Batch CleanExpressions has no effect.
+22/05/12 16:46:44 WARN PlanChangeLogger:
+=== Metrics of Executed Rules ===
+Total number of runs: 1
+Total time: 3.6598E-5 seconds
+Total number of effective runs: 0
+Total time of effective runs: 0.0 seconds
+
+22/05/12 16:46:44 WARN PlanChangeLogger: Batch CleanExpressions has no effect.
+22/05/12 16:46:44 WARN PlanChangeLogger:
+=== Metrics of Executed Rules ===
+Total number of runs: 1
+Total time: 1.7991E-5 seconds
+Total number of effective runs: 0
+Total time of effective runs: 0.0 seconds
+
+22/05/12 16:46:44 WARN PlanChangeLogger: Batch CleanExpressions has no effect.
+22/05/12 16:46:44 WARN PlanChangeLogger:
+=== Metrics of Executed Rules ===
+Total number of runs: 1
+Total time: 2.061E-5 seconds
+Total number of effective runs: 0
+Total time of effective runs: 0.0 seconds
+
+22/05/12 16:46:44 WARN PlanChangeLogger: Batch CleanExpressions has no effect.
+22/05/12 16:46:44 WARN PlanChangeLogger:
+=== Metrics of Executed Rules ===
+Total number of runs: 1
+Total time: 1.6199E-5 seconds
+Total number of effective runs: 0
+Total time of effective runs: 0.0 seconds
+
+22/05/12 16:46:45 WARN PlanChangeLogger:
+=== Applying Rule org.apache.spark.sql.execution.adaptive.AQEPropagateEmptyRelation ===
+!Aggregate [age#32], [age#32]                                    LocalRelation <empty>, [age#32]
+!+- Join LeftAnti, (age#32 <=> age#37)
+!   :- LogicalQueryStage Project [age#32], ShuffleQueryStage 0
+!   +- LogicalQueryStage Project [age#37], ShuffleQueryStage 1
+
+22/05/12 16:46:45 WARN PlanChangeLogger:
+=== Result of Batch Propagate Empty Relations ===
+!Aggregate [age#32], [age#32]                                    LocalRelation <empty>, [age#32]
+!+- Join LeftAnti, (age#32 <=> age#37)
+!   :- LogicalQueryStage Project [age#32], ShuffleQueryStage 0
+!   +- LogicalQueryStage Project [age#37], ShuffleQueryStage 1
+
+22/05/12 16:46:45 WARN PlanChangeLogger: Batch Dynamic Join Selection has no effect.
+22/05/12 16:46:45 WARN PlanChangeLogger:
+=== Metrics of Executed Rules ===
+Total number of runs: 7
+Total time: 9.1664E-4 seconds
+Total number of effective runs: 1
+Total time of effective runs: 7.21206E-4 seconds
+
+22/05/12 16:46:45 WARN PlanChangeLogger: Batch AQE Replanning has no effect.
+22/05/12 16:46:45 WARN PlanChangeLogger: Batch AQE Query Stage Optimization has no effect.
+22/05/12 16:46:45 WARN PlanChangeLogger: Batch AQE Post Stage Creation has no effect.
+Time taken: 1.556 seconds
