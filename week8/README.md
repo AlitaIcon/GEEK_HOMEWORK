@@ -267,7 +267,7 @@ case class MultiplyOptimizationRule(spark: SparkSession) extends Rule[LogicalPla
     ```
 3. 第三步：通过 spark.sql.extensions 提交
     ```bash
-    ./bin/spark-sql --jars /work/projects/bigdata/sparksql/target/spark-extension-1.0-SNAPSHOT.jar --conf spark.sql.extensions=org.example.MySparkSessionExtension
+    ./bin/spark-sql --jars MyExtension-1.0-SNAPSHOT.jar --conf spark.sql.extensions=org.example.MySparkSessionExtensions
     ```
    通过sql语句`select id * 1 from t_user;`测试结果如下：
     ```text
